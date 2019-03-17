@@ -36,7 +36,7 @@ Helper functions
 ----------------
 .. code-block:: python
 
-    # Get a *rough* estimate of the current battery voltage
+    # Return a *rough* estimate of the current battery voltage
     def battery_voltage():
 
     # Return the current charge state of the battery

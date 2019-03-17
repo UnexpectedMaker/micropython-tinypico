@@ -1,4 +1,4 @@
-# TinyPICO MicroPython Support Library
+# TinyPICO MicroPython Helper Library
 # 2019 Seon Rozenblum, Matt Trentini
 #
 # Project home:
@@ -60,11 +60,7 @@ def battery_charging():
 # We also need to set the DOTSTAR clock and data pins to be inputs to prevent power leakage when power is off
 # This might be fixed in the Software SPI implementation at a future date
 def dotstar_power( state ):
-    Pin( DOTSTAR_PWR ).value( not state )   # Set the power pin to the inverse of state 
+    Pin( DOTSTAR_PWR ).value( not state )               # Set the power pin to the inverse of state 
 
-    if state :                              # If power is on, set CLK and DATA to be outputs
-        Pin( DOTSTAR_CLK, Pin.OUT )
-        Pin( DOTSTAR_DATA, Pin.OUT )
-    else:                                   # If power is on, set CLK and DATA to be inputs
-        Pin( DOTSTAR_CLK, Pin.IN )
-        Pin( DOTSTAR_DATA, Pin.IN )
+    Pin(DOTSTAR_CLK, Pin.OUT if state else Pin.IN )     # If power is on, set CLK to be output, otherwise input
+    Pin(DOTSTAR_DATA, Pin.OUT if state else Pin.IN )    # If power is on, set DATA to be output, otherwise input
