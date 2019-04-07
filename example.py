@@ -19,7 +19,12 @@ print("Hello from TinyPICO!")
 print("Battery Voltage is {}V".format( TinyPICO.battery_voltage() ) )
 print("Battery Charge State is {}".format( TinyPICO.battery_charging() ) )
 
-# Flicker random colours on the Dotstar
+# Create a colour wheel index int
+color_index = 0
+
+# Rainbow colours on the Dotstar
 while True:
-    dotstar[0] = ( random.randrange(0, 255), random.randrange(0, 255), random.randrange(0, 255), 0.5) # Random colours!
-    time.sleep(0.2)
+    r,g,b = TinyPICO.dotstar_color_wheel( color_index )
+    dotstar[0] = ( r, g, b, 0.5) # Rainbow
+    color_index += 1
+    time.sleep(0.02)

@@ -9,6 +9,7 @@
 # Import required libraries 
 from micropython import const
 from machine import Pin, SPI, ADC
+import machine, time
 
 # Pin assingmenta
 
@@ -60,7 +61,40 @@ def battery_charging():
 # We also need to set the DOTSTAR clock and data pins to be inputs to prevent power leakage when power is off
 # This might be fixed in the Software SPI implementation at a future date
 def dotstar_power( state ):
-    Pin( DOTSTAR_PWR ).value( not state )               # Set the power pin to the inverse of state 
-
+    # Set the power pin to the inverse of state 
+    if state:
+        Pin( DOTSTAR_PWR, Pin.OUT, None )   # Break the PULL_HOLD on the pin
+        Pin( DOTSTAR_PWR ).value( False )   # Set the pin to LOW to enable the Transistor
+    else:
+        machine.Pin(13, machine.Pin.IN, machine.Pin.PULL_HOLD) # Set PULL_HOLD on the pin to allow the 3V3 pullup to work
+                   
     Pin(DOTSTAR_CLK, Pin.OUT if state else Pin.IN )     # If power is on, set CLK to be output, otherwise input
     Pin(DOTSTAR_DATA, Pin.OUT if state else Pin.IN )    # If power is on, set DATA to be output, otherwise input
+
+    print ( " DOTSTAR Power is {}".format( state ) )
+
+    # A small delay to let the IO change state
+    time.sleep(.035)
+
+# Dotstar rainbow colour wheel
+def dotstar_color_wheel( wheel_pos ):
+    wheel_pos = wheel_pos % 255
+    
+    if wheel_pos < 85:
+        return (255 - wheel_pos * 3, 0, wheel_pos * 3)   
+    elif wheel_pos < 170:
+        wheel_pos -= 85
+        return (0, wheel_pos * 3, 255 - wheel_pos * 3)
+    else:
+        wheel_pos -= 170
+        return ( wheel_pos * 3, 255 - wheel_pos * 3, 0)
+
+# Go into deep sleep but shut down the APA first to save power
+# Use this  if you want lowest deep  sleep current
+def go_deepsleep( t ):
+    dotstar_power( False )
+    machine.deepsleep( t )
+
+
+
+
